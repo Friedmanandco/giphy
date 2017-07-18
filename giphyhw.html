@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Quoth the Giphy</title>
+</head>
+
+<body>
+  <div id="buttons">
+
+    <button data-person="cat">
+      Cat
+    </button>
+    <button data-person="dog">
+      dog
+    </button>
+
+  
+
+      <button data-person="bird"> bird</button>
+      <button data-person="horse">horse</button>
+      <button data-person="rabbit">yayo</button>
+   
+  </div>
+  <div id="animals">
+      <form id="animal-form">
+        <label for="animal-input">add a animal</label>
+        <input type="text" id="animal-input">
+        <input id="addAnimal" type="submit" value="Submit">
+
+      </form>
+      </div>
+  <div id="gifs-appear-here">
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script type="text/javascript">
+
+
+            
+
+    $("button").on("click", function() {
+
+      
+      var person = $(this).attr("data-person");
+      var queryURL = "http://api.giphy.com/v1/gifs/search?q=" +
+        person + "&api_key=dc6zaTOxFJmzC&limit=10";
+
+      $.ajax({
+          url: queryURL,
+          method: "GET"
+        })
+        .done(function(response) {
+          var results = response.data;
+
+          for (var i = 0; i < results.length; i++) {
+            var gifDiv = $("<div class='item'>");
+
+            var rating = results[i].rating;
+
+            var p = $("<p>").text("Rating: " + rating);
+            var animated = results[i].images.fixed_height.url;
+            var still = results[i].images.fixed_height_still.url;
+            var personImage = $("<img>");
+            personImage.attr("src", still);
+            personImage.attr("data-still", still);
+            personImage.attr("data-animate", animated);
+            personImage.attr("data-state", "still");
+            personImage.addClass("animal-image");
+            // setting on click function to stop and animate images 
+            personImage.on("click", function(){
+              // set var state to grab data-state attribute 
+              var state = $(this).attr("data-state");
+              if (state === "still") {
+              $(this).attr("src", $(this).attr("data-animate"));
+              $(this).attr("data-state", "animate");
+            } else {
+              $(this).attr("src", $(this).attr("data-still"));
+              $(this).attr("data-state", "still")
+            }
+            });
+
+            gifDiv.prepend(p);
+            gifDiv.prepend(personImage);
+
+
+
+            $("#gifs-appear-here").prepend(gifDiv);
+          }
+        });
+    });
+  </script>
+</body>
+
+</html>
